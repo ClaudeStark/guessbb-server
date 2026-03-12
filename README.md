@@ -1,5 +1,5 @@
 # SoPra RESTful Service Template FS26
-# Testing SOnarQube Server
+# Testing SonarQube Server (Automatic analysis off)
 ## Getting started with Spring Boot
 -   Documentation: https://docs.spring.io/spring-boot/docs/current/reference/html/index.html
 -   Guides: http://spring.io/guides
