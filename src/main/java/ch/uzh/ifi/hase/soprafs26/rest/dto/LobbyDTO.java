@@ -14,6 +14,10 @@ public class LobbyDTO {
 
     private LobbyState lobbyState;
 
+    private String lobbyCode;
+
+    private String lobbyId;
+
 
     public String getLobbyName() {return lobbyName;}
     public void setLobbyName(String lobbyName) {this.lobbyName = lobbyName;}
@@ -29,5 +33,11 @@ public class LobbyDTO {
 
     public LobbyState getLobbyState() {return lobbyState;}
     public void setLobbyState(LobbyState lobbyState) {this.lobbyState = lobbyState;}
+
+    public String getLobbyCode() {return lobbyCode;}
+    public void setLobbyCode(String lobbyCode) {this.lobbyCode = lobbyCode;}
+
+    public String getLobbyId() {return lobbyId;}
+    public void setLobbyId(String lobbyId) {this.lobbyId = lobbyId;}
 
 }

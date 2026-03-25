@@ -56,6 +56,7 @@ public class Lobby {
 
     public List<User> getUsers() {return users;}
     public void setUsers(List<User> users) {this.users = users;}
+    public void addUser(User user) {this.users.add(user);}
 
     public Integer getCurrentRound() {return currentRound;}
     public void setCurrentRound(Integer currentRound) {this.currentRound = currentRound;}
