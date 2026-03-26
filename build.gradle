@@ -25,6 +25,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+    //maven { url "https://jitpack.io" }
 }
 
 springBoot {
@@ -39,7 +40,15 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-json'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-h2console'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // GTFS realtime protobuf
+    implementation 'com.google.transit:gtfs-realtime-bindings:0.0.4'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.h2database:h2'
@@ -48,6 +57,14 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'   
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    //implementation("com.google.transit:gtfs-realtime-bindings:0.0.10")
+    //implementation "io.mobilitydata:gtfs-realtime-bindings:0.0.11"
+    implementation("com.opencsv:opencsv:5.9")
+
+    implementation group: 'org.mobilitydata', name: 'gtfs-realtime-bindings', version: '0.0.8'
 }
 
 bootJar {

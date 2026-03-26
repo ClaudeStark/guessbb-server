@@ -8,10 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import ch.uzh.ifi.hase.soprafs26.constant.LobbyState;
 
 import ch.uzh.ifi.hase.soprafs26.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs26.entity.*;
-;
+
 
 import ch.uzh.ifi.hase.soprafs26.service.AuthService;
 import ch.uzh.ifi.hase.soprafs26.service.UserService;
@@ -49,7 +50,7 @@ public class LobbyService {
         return activeLobbies;
     }
 
-    public Lobby joinLobby(String userId, String lobbyId, string lobbyCode) {
+    public Lobby joinLobby(String userId, String lobbyId, String lobbyCode) {
         Lobby lobby = getLobbyById(lobbyId);
         
         User user = userService.getUserById(userId);

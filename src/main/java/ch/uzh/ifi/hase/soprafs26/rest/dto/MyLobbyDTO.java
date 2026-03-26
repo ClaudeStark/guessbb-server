@@ -19,7 +19,7 @@ public class MyLobbyDTO {
 
     private Integer size;
 
-    private LobbyVisibility lobbyVisibility;
+    private LobbyVisibility visibility;
 
     private List<User> users;
 
@@ -47,8 +47,8 @@ public class MyLobbyDTO {
     public Integer getSize() {return size;}
     public void setSize(Integer size) {this.size = size;}
 
-    public LobbyVisibility getLobbyVisibility() {return lobbyVisibility;}
-    public void setLobbyVisibility(LobbyVisibility lobbyVisibility) {this.lobbyVisibility = lobbyVisibility;}
+    public LobbyVisibility getVisibility() {return visibility;}
+    public void setVisibility(LobbyVisibility visibility) {this.visibility = visibility;}
 
     public List<User> getUsers() {return users;}
     public void setUsers(List<User> users) {this.users = users;}

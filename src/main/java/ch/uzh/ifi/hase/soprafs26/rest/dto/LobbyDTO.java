@@ -8,7 +8,7 @@ public class LobbyDTO {
 
     private Integer size;
 
-    private LobbyVisibility lobbyVisibility;
+    private LobbyVisibility visibility;
 
     private Integer maxRounds;
 
@@ -25,8 +25,8 @@ public class LobbyDTO {
     public Integer getSize() {return size;}
     public void setSize(Integer size) {this.size = size;}
 
-    public LobbyVisibility getLobbyVisibility() {return lobbyVisibility;}
-    public void setLobbyVisibility(LobbyVisibility lobbyVisibility) {this.lobbyVisibility = lobbyVisibility;}
+    public LobbyVisibility getVisibility() {return visibility;}
+    public void setVisibility(LobbyVisibility visibility) {this.visibility = visibility;}
 
     public Integer getMaxRounds() {return maxRounds;}
     public void setMaxRounds(Integer maxRounds) {this.maxRounds = maxRounds;}

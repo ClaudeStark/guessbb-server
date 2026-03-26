@@ -12,6 +12,9 @@ import ch.uzh.ifi.hase.soprafs26.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs26.entity.Lobby;
 import ch.uzh.ifi.hase.soprafs26.rest.dto.LobbyCodePostDTO;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,14 +51,14 @@ public class LobbyRESTController {
     @PostMapping("/lobbies/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public LobbyAccessDTO joinLobby(@PathVariable("id") String lobbyId, @RequestHeader("Token") String token,
+    public LobbyAccessDTO joinLobby(@PathVariable("id") String lobbyId, @RequestHeader("Token") String token, @RequestHeader("UserId") String userId,
 @RequestBody LobbyCodePostDTO lobbyCodePostDTO) {
         //in this version: lobbyCodePostDTO contains userID, modify based on implementation of authService
         Lobby lobbyCodePostDTOentity = DTOMapper.INSTANCE.convertLobbyCodePostDTOtoEntity(lobbyCodePostDTO);
         // Check if the user is authenticated
         try {
-            authService.authUser(token, lobbyCodePostDTOentity.getUserId());
-            Lobby lobby = lobbyService.joinLobby(lobbyCodePostDTOentity.getUserId(), lobbyId, lobbyCodePostDTOentity.getLobbyCode());
+            authService.authUser(token, userId);
+            Lobby lobby = lobbyService.joinLobby(userId, lobbyId, lobbyCodePostDTOentity.getLobbyCode());
             // Return the lobby access information
             return DTOMapper.INSTANCE.convertEntityToLobbyAccessDTO(lobby);
         } catch (Exception e) {
