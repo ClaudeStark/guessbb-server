@@ -1,5 +1,3 @@
-//Teeeeeeeeessssssstttttttttt
-
 package ch.uzh.ifi.hase.soprafs26.security;
 
 public class AuthHeader {
