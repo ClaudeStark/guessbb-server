@@ -22,9 +22,9 @@ public class AuthService {
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This user could not be found");
         }
-        if (!user.getToken().equals(authHeader.getToken())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+        if (user.getToken() == null) {
+            return false;
         }
-        return true;
+        return user.getToken().equals(authHeader.getToken());
     }
 }
