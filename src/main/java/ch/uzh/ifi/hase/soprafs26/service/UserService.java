@@ -11,6 +11,7 @@ import ch.uzh.ifi.hase.soprafs26.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs26.entity.User;
 import ch.uzh.ifi.hase.soprafs26.entity.UserScoreboard;
 import ch.uzh.ifi.hase.soprafs26.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs26.security.AuthHeader;
 
 import java.util.List;
 import java.util.UUID;
@@ -107,6 +108,14 @@ public class UserService {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This user could not be found");
 		}
 		return user;
+	}
+
+	public void logoutUser(AuthHeader authHeader) {
+		User user = userRepository.findById(Long.parseLong(authHeader.getUserId())).orElse(null);
+		user.setToken(null);
+		user.setStatus(UserStatus.OFFLINE);
+		userRepository.save(user);
+		userRepository.flush();
 	}
 
 	/**

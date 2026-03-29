@@ -80,12 +80,16 @@ public class UserController {
 		}
 	}
 
-	// @PostMapping("/users/{userId}/logout")
-	// @ResponseStatus(HttpStatus.OK)
-	// public void logoutUser(@RequestHeader("token") String token,
-	// @PathVariable("userId") String userId) {
-	// userService.logoutUser(userId, token);
-	// }
+	@PostMapping("/users/{userId}/logout")
+	@ResponseStatus(HttpStatus.OK)
+	public void logoutUser(@RequestHeader("token") String token, @PathVariable("userId") String userId) {
+
+		AuthHeader authHeader = new AuthHeader(userId, token);
+		if (!authService.authUser(authHeader)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+		}
+		userService.logoutUser(authHeader);
+	}
 
 }
 
