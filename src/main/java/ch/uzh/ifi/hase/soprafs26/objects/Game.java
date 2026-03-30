@@ -1,4 +1,7 @@
-package ch.uzh.ifi.hase.soprafs26.entity;
+package ch.uzh.ifi.hase.soprafs26.objects;
+
+import ch.uzh.ifi.hase.soprafs26.objects.Round;
+import ch.uzh.ifi.hase.soprafs26.objects.Train;
 
 import java.util.List;
 
@@ -12,7 +15,7 @@ public class Game {
     private List<Train> trains;
 
 
-    public Game(Long gameID,  List<Round> rounds, List<Train> trains) {
+    public Game(Long gameID, List<Round> rounds, List<Train> trains) {
         this.gameID = gameID;
         this.rounds = rounds;
         this.trains = trains;

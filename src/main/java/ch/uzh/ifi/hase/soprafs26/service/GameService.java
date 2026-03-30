@@ -1,9 +1,11 @@
 package ch.uzh.ifi.hase.soprafs26.service;
 
-import ch.qos.logback.classic.pattern.Util;
-import ch.uzh.ifi.hase.soprafs26.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs26.entity.*;
+
+import ch.uzh.ifi.hase.soprafs26.objects.Game;
+import ch.uzh.ifi.hase.soprafs26.entity.User;
+import ch.uzh.ifi.hase.soprafs26.objects.*;
 import ch.uzh.ifi.hase.soprafs26.rest.dto.GuessMessageDTO;
+import ch.uzh.ifi.hase.soprafs26.security.AuthService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,19 +23,19 @@ public class GameService {
         List<Train> trains = new ArrayList<>(); //replace with fetchTrains
         List<Round> rounds = new ArrayList<>();
 
-        Lobby currentLobby = lobbyService.getLobbyById(lobbyId); //needs to change to long
+        Lobby currentLobby = lobbyService.getLobbyById(lobbyId);
         List<User> players = currentLobby.getUsers();
 
-        List<UserGameStatus> allUsersReadyStatus = new ArrayList<>();
+        List<UserGameStatus> allUsersGameStatus = new ArrayList<>();
         List<GuessMessage> guessMessages = new ArrayList<>();
 
         for  (User user : players) {
-            allUsersReadyStatus.add(new UserGameStatus(user.getUserId()));
-            guessMessages.add(new GuessMessage(currentLobby, user.getUserId()));
+            allUsersGameStatus.add(new UserGameStatus(user.getUserId()));
+            guessMessages.add(new GuessMessage(currentLobby.getLobbyId(), user.getUserId()));
         }
 
         for (Integer i = 0; i < maxRounds; i++) {
-            rounds.add(new Round(i+1, trains.get(i), guessMessages,  allUsersReadyStatus));
+            rounds.add(new Round(i+1, trains.get(i), guessMessages, allUsersGameStatus));
         }
 
         Game newGame = new Game(currentLobby.getLobbyId(), rounds, trains);
