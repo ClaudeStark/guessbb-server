@@ -10,7 +10,7 @@ import java.util.List;
 public class Lobby {
 
     //randomized??
-    private String lobbyId;
+    private Long lobbyId;
 
     private String lobbyName;
 
@@ -36,8 +36,8 @@ public class Lobby {
     private Game game;
 
 
-    public String getLobbyId() {return lobbyId;}
-    public void setLobbyId(String lobbyId) {this.lobbyId = lobbyId;}
+    public Long getLobbyId() {return lobbyId;}
+    public void setLobbyId(Long lobbyId) {this.lobbyId = lobbyId;}
 
     public String getLobbyName() {return lobbyName;}
     public void setLobbyName(String lobbyName) {this.lobbyName = lobbyName;}

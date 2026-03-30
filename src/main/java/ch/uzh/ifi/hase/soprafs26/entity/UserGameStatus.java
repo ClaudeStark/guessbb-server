@@ -7,6 +7,11 @@ public class UserGameStatus {
     private Boolean isReady;
 
 
+    public UserGameStatus(String userId) {
+        this.userId = userId;
+        this.isReady = false;
+    }
+
     public String getUserId() {return userId;}
     public void setUserId(String userId) {this.userId = userId;}
 

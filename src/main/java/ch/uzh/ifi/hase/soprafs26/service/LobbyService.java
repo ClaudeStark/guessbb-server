@@ -81,7 +81,7 @@ public class LobbyService {
 
     public void startGame(String lobbyId) {}
 
-    private Lobby getLobbyById(String lobbyId) {
+    public Lobby getLobbyById(String lobbyId) {
         for (Lobby lobby : activeLobbies) {
             if (lobby.getLobbyId().equals(lobbyId)) {
                 return lobby;

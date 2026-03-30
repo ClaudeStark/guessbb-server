@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs26.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Round {
@@ -12,6 +13,13 @@ public class Round {
 
     private List<UserGameStatus> allUserGameStatuses;
 
+
+    public Round(Integer roundNumber, Train train, List<GuessMessage> guessMessages, List<UserGameStatus> allUserGameStatuses) {
+        this.roundNumber = roundNumber;
+        this.train = train;
+        this.guessMessages = guessMessages;
+        this.allUserGameStatuses = allUserGameStatuses;
+    }
 
     public int getRoundNumber() {return roundNumber;}
     public void setRoundNumber(int roundNumber) {this.roundNumber = roundNumber;}

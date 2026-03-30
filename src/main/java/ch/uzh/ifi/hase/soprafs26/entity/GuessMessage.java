@@ -11,6 +11,11 @@ public class GuessMessage {
     private String longitude;
 
 
+    public GuessMessage(String lobbyId, String userId) {
+        this.lobbyId = lobbyId;
+        this.userId = userId;
+    }
+
     public String getLobbyId() {return lobbyId;}
     public void setLobbyId(String lobbyId) {this.lobbyId = lobbyId;}
 
