@@ -36,6 +36,10 @@ public class GameController {
 
     @MessageMapping("/game/{gameId}/ready")
     public void updateUserGameStatus(@DestinationVariable Long gameID, Message readyForNextRoundMessage) {
-        gameService.updateUserGameStatus(gameID, readyForNextRoundMessage);
+        MessageType type = readyForNextRoundMessage.getType();
+        if (type == MessageType.READY_FOR_NEXT_ROUND){
+            UserGameStatus userGameStatus = objectMapper.convertValue(readyForNextRoundMessage.getPayload(), UserGameStatus.class);
+            gameService.updateUserGameStatus(gameID, userGameStatus);
+        }
     }
 }

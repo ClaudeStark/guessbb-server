@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs26.service;
 
 import ch.uzh.ifi.hase.soprafs26.constant.LobbyVisibility;
+import ch.uzh.ifi.hase.soprafs26.objects.Game;
 import ch.uzh.ifi.hase.soprafs26.objects.Lobby;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -79,7 +80,7 @@ public class LobbyService {
         Lobby lobby = getLobbyById(lobbyId);
 
         //create a Game object and fetch the Train data
-        Game game = gameService.setupGame();
+        Game game = gameService.setupGame(lobbyId);
 
         //update the Lobby object
         lobby.setGame(game);

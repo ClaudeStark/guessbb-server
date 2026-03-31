@@ -1,9 +1,8 @@
-package ch.uzh.trains;
+package ch.uzh.ifi.hase.soprafs26.trains;
 
-import ch.uzh.ifi.hase.soprafs26.entity.Station;
-import ch.uzh.ifi.hase.soprafs26.entity.Train;
-import ch.uzh.ifi.hase.soprafs26.entity.LineString;
-import ch.uzh.ifi.hase.soprafs26.entity.LineString.Point;
+import ch.uzh.ifi.hase.soprafs26.objects.Station;
+import ch.uzh.ifi.hase.soprafs26.objects.Train;
+import ch.uzh.ifi.hase.soprafs26.objects.LineString;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
