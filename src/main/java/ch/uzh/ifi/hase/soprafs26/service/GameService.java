@@ -6,6 +6,8 @@ import ch.uzh.ifi.hase.soprafs26.entity.User;
 import ch.uzh.ifi.hase.soprafs26.objects.*;
 import ch.uzh.ifi.hase.soprafs26.rest.dto.GuessMessageDTO;
 import ch.uzh.ifi.hase.soprafs26.security.AuthService;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,16 @@ public class GameService {
 
     private GameTrainsService gameTrainsService;
 
-    public Game setupGame(Long lobbyId, List<User> users, Integer maxRounds) {
+    public Game getGameById(Long gameId) {
+        for (Game game : activeGames) {
+            if (game.getGameId().equals(gameId)) {
+                return game;
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found");
+    }
+
+    public Game setupGame(Long lobbyId, Integer maxRounds) {
         List<Train> trains = new ArrayList<>(); //replace with fetchTrains
         List<Round> rounds = new ArrayList<>();
 
@@ -46,10 +57,31 @@ public class GameService {
     }
 
     public void proccessGuessMessage(GuessMessageDTO guessMessageDTO){
-        Long currentGameId = guessMessageDTO.getLobbyId();
+        Long gameId = guessMessageDTO.getLobbyId();
+        Long userId = guessMessageDTO.getUserId();
+
+        Lobby currentLobby = lobbyService.getLobbyById(gameId);
+        Game currentGame = getGameById(gameId);
+        Integer roundNumber = currentLobby.getCurrentRound();
+        List<Round> rounds = currentGame.getRounds();
+
+
+
+        updateUserGameStatus(gameId, userId, roundNumber);
+
     }
 
-    public void updateReadyStatus(Long gameId, Long userId) {
+    public void updateUserGameStatus(Long gameId, Long userId, Integer roundNumber) {
+        Game currentGame = getGameById(gameId);
+        List<Round> rounds = currentGame.getRounds();
+        Round currentRound =  rounds.get(roundNumber);
+        List<UserGameStatus> allUsersGameStatus = currentRound.getAllUserGameStatuses();
+
+        for  (UserGameStatus userGameStatus : allUsersGameStatus) {
+            if(userGameStatus.getUserId().equals(userId)) {
+                userGameStatus.setIsReady(true);
+            }
+        }
 
     }
 

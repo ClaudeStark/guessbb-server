@@ -1,28 +1,25 @@
 package ch.uzh.ifi.hase.soprafs26.objects;
 
-import ch.uzh.ifi.hase.soprafs26.objects.Round;
-import ch.uzh.ifi.hase.soprafs26.objects.Train;
-
 import java.util.List;
 
 public class Game {
 
 
-    private Long gameID;
+    private Long gameId;
 
     private List<Round> rounds;
 
     private List<Train> trains;
 
 
-    public Game(Long gameID, List<Round> rounds, List<Train> trains) {
-        this.gameID = gameID;
+    public Game(Long gameId, List<Round> rounds, List<Train> trains) {
+        this.gameId = gameId;
         this.rounds = rounds;
         this.trains = trains;
     }
 
-    public Long getGameID() {return gameID;}
-    public void setGameID(Long gameID) {this.gameID = gameID;}
+    public Long getGameId() {return gameId;}
+    public void setGameId(Long gameId) {this.gameId = gameId;}
 
     public List<Round> getRounds() {return rounds;}
     public void setRounds(List<Round> rounds) {this.rounds = rounds;}
