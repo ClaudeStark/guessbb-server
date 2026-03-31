@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs26.entity.User;
 import ch.uzh.ifi.hase.soprafs26.objects.*;
 import ch.uzh.ifi.hase.soprafs26.rest.dto.GuessMessageDTO;
 import ch.uzh.ifi.hase.soprafs26.security.AuthService;
+import ch.uzh.ifi.hase.soprafs26.websocket.Message;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +50,7 @@ public class GameService {
             guessMessages.add(new GuessMessage(currentLobby.getLobbyId(), user.getUserId()));
         }
 
-        for (Integer i = 0; i < maxRounds; i++) {
+        for (int i = 0; i < maxRounds; i++) {
             rounds.add(new Round(i+1, trains.get(i), guessMessages, allUsersGameStatus));
         }
 
@@ -60,9 +61,10 @@ public class GameService {
         return newGame;
     }
 
-    public void processGuessMessage(GuessMessageDTO guessMessageDTO){
-        Long gameId = guessMessageDTO.getLobbyId();
-        Long userId = guessMessageDTO.getUserId();
+    public void processGuessMessage(Message guessMessage){
+//        Long gameId = guessMessage.getLobbyId();
+        Long gameId = guessMessage.getPayload().gameId;
+        Long userId = guessMessage.getUserId();
 
         Lobby currentLobby = lobbyService.getLobbyById(gameId);
         Game currentGame = getGameById(gameId);
