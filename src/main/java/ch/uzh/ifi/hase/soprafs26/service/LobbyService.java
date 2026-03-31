@@ -2,9 +2,6 @@ package ch.uzh.ifi.hase.soprafs26.service;
 
 import ch.uzh.ifi.hase.soprafs26.constant.LobbyVisibility;
 import ch.uzh.ifi.hase.soprafs26.objects.Lobby;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +17,7 @@ import ch.uzh.ifi.hase.soprafs26.rest.dto.MyLobbyDTO;
 import ch.uzh.ifi.hase.soprafs26.rest.mapper.DTOMapper;
 
 import ch.uzh.ifi.hase.soprafs26.constant.*;
-import websocket.Message;
+import ch.uzh.ifi.hase.soprafs26.websocket.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.List;

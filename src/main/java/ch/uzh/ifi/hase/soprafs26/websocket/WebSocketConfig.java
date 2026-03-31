@@ -1,4 +1,4 @@
-package websocket;
+package ch.uzh.ifi.hase.soprafs26.websocket;
 
 
 import org.springframework.context.annotation.Configuration;
