@@ -1,11 +1,9 @@
-package ch.uzh.ifi.hase.soprafs26.rest.dto;
-
-import ch.uzh.ifi.hase.soprafs26.objects.Round;
-import ch.uzh.ifi.hase.soprafs26.objects.Train;
+package ch.uzh.ifi.hase.soprafs26.objects;
 
 import java.util.List;
 
-public class GameDTO {
+public class Game {
+
 
     private Long gameId;
 
@@ -13,6 +11,12 @@ public class GameDTO {
 
     private List<Train> trains;
 
+
+    public Game(Long gameId, List<Round> rounds, List<Train> trains) {
+        this.gameId = gameId;
+        this.rounds = rounds;
+        this.trains = trains;
+    }
 
     public Long getGameId() {return gameId;}
     public void setGameId(Long gameId) {this.gameId = gameId;}
