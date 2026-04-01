@@ -4,16 +4,22 @@ import java.util.List;
 
 public class Game {
 
-    //randomized??
-    private Long gameID;
+
+    private Long gameId;
 
     private List<Round> rounds;
 
     private List<Train> trains;
 
 
-//    public String getGameID() {return gameID;}
-//    public void setGameID(String gameID) {this.gameID = gameID;}
+    public Game(Long gameId, List<Round> rounds, List<Train> trains) {
+        this.gameId = gameId;
+        this.rounds = rounds;
+        this.trains = trains;
+    }
+
+    public Long getGameId() {return gameId;}
+    public void setGameId(Long gameId) {this.gameId = gameId;}
 
     public List<Round> getRounds() {return rounds;}
     public void setRounds(List<Round> rounds) {this.rounds = rounds;}

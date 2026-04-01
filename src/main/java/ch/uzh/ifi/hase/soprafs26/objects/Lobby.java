@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs26.objects;
 
 import ch.uzh.ifi.hase.soprafs26.constant.LobbyState;
 import ch.uzh.ifi.hase.soprafs26.constant.LobbyVisibility;
+import ch.uzh.ifi.hase.soprafs26.objects.Game;
 import ch.uzh.ifi.hase.soprafs26.entity.User;
 
 import java.util.List;
@@ -23,6 +24,8 @@ public class Lobby {
     private LobbyVisibility visibility;
 
     private List<User> users;
+
+    private List<Round> rounds;
 
     private Integer currentRound;
 
@@ -56,6 +59,9 @@ public class Lobby {
     public List<User> getUsers() {return users;}
     public void setUsers(List<User> users) {this.users = users;}
     public void addUser(User user) {this.users.add(user);}
+
+    public List<Round> getRounds() {return rounds;}
+    public void setRounds(List<Round> rounds) {this.rounds = rounds;}
 
     public Integer getCurrentRound() {return currentRound;}
     public void setCurrentRound(Integer currentRound) {this.currentRound = currentRound;}
