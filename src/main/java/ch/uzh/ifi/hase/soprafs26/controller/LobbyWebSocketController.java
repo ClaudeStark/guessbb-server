@@ -20,12 +20,13 @@ public class LobbyWebSocketController {
     private final LobbyService lobbyService;
     private final AuthService authService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    //@Autowired
+    private final ObjectMapper objectMapper;
 
-    public LobbyWebSocketController(LobbyService lobbyService, AuthService authService) {
+    public LobbyWebSocketController(LobbyService lobbyService, AuthService authService, ObjectMapper objectMapper) {
         this.lobbyService = lobbyService;
         this.authService = authService;
+        this.objectMapper = objectMapper;
     }
 
     @MessageMapping("/lobby/{lobbyId}/start")
