@@ -4,26 +4,19 @@ import ch.uzh.ifi.hase.soprafs26.constant.UserStatus;
 
 public class UserGetDTO {
 
-	private Long id;
-	private String name;
+	private Long userId;
 	private String username;
 	private UserStatus status;
 
-	public Long getId() {
-		return id;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
-	public String getName() {
-		return name;
-	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
 
 	public String getUsername() {
 		return username;
