@@ -96,7 +96,25 @@ public class GameService {
         Integer roundNumber = currentLobby.getCurrentRound();
         List<Round> rounds = currentGame.getRounds();
 
+        Round currentRound = rounds.get(roundNumber - 1);
+        Train currentTrain = currentRound.getTrain();
+        Long trainCurentX = currentTrain.getCurrentX();
+        Long trainCurentY = currentTrain.getCurrentY();
 
+        Long playerGuessX = guessMessage.getXcoordinate();
+        Long playerGuessY = guessMessage.getYcoordinate();
+
+        Long guessDistance = (long) Math.sqrt((playerGuessX - trainCurentX)*(playerGuessX - trainCurentX) + (playerGuessY - trainCurentY)*(playerGuessY - trainCurentY));
+        int score;
+        if (guessDistance <= 0) {
+            score = 1000;
+        }
+        else{
+            score = (int) (1000/(guessDistance*0.0008 + 1));
+        }
+
+        // TODO : Send Score back to frontend subscribers
+         // Process the guess and update the user's game status
 
         UserGameStatus userGameStatus = new UserGameStatus(userId, true);
         updateUserGameStatus(userGameStatus, currentLobby);

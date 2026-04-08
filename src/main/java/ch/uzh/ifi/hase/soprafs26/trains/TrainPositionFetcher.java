@@ -458,12 +458,16 @@ public class TrainPositionFetcher {
         }
 
         JsonNode seq = content.get(0);
-        train.setLineDestination(seq.path("destination").asText(null));
+        //train.setLineDestination(seq.path("destination").asText(null));
+
 
         JsonNode stations = seq.path("stations");
         if (!stations.isArray() || stations.size() == 0) return;
 
-        train.setLineOrigin(stations.get(0).path("stationName").asText(null));
+        //train.setLineOrigin(stations.get(0).path("stationName").asText(null));
+        train.setLineOrigin(parseStation(stations.get(0)));
+
+        train.setLineDestination(parseStation(stations.get(stations.size() - 1)));
 
         Station lastLeaving = null;
         Station nextPending = null;
