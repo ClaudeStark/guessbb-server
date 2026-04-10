@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs26.entity.User;
 import ch.uzh.ifi.hase.soprafs26.objects.*;
 import ch.uzh.ifi.hase.soprafs26.rest.dto.GuessMessageDTO;
 import ch.uzh.ifi.hase.soprafs26.rest.dto.MyLobbyDTO;
+import ch.uzh.ifi.hase.soprafs26.rest.dto.ResultDTO;
 import ch.uzh.ifi.hase.soprafs26.rest.dto.RoundStartDTO;
 import ch.uzh.ifi.hase.soprafs26.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs26.security.AuthService;
@@ -185,5 +186,23 @@ public class GameService {
         );
 
         activeTimers.put(gameId, lastMessagesTimer);
+    }
+
+    public void publishScores(Lobby currentLobby) {
+        Game currentGame =  currentLobby.getGame();
+
+        List<Score> totalScores =  currentLobby.getScores();
+
+        List<Score> roundScores = currentGame.getRounds().get(currentLobby.getCurrentRound()).getAllScores();
+
+        ResultDTO resultDTO = new ResultDTO();
+        resultDTO.setTotalScores(totalScores);
+        resultDTO.setRoundScores(roundScores);
+
+        Message message = new Message(MessageType.SCORES, resultDTO);
+
+        messagingTemplate.convertAndSend("/topic/game/" + currentGame.getGameId(), message);
+
+
     }
 }
