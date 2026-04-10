@@ -7,10 +7,12 @@ import ch.uzh.ifi.hase.soprafs26.entity.User;
 import ch.uzh.ifi.hase.soprafs26.objects.*;
 import ch.uzh.ifi.hase.soprafs26.rest.dto.GuessMessageDTO;
 import ch.uzh.ifi.hase.soprafs26.rest.dto.MyLobbyDTO;
+import ch.uzh.ifi.hase.soprafs26.rest.dto.ResultDTO;
 import ch.uzh.ifi.hase.soprafs26.rest.dto.RoundStartDTO;
 import ch.uzh.ifi.hase.soprafs26.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs26.security.AuthService;
 import ch.uzh.ifi.hase.soprafs26.trains.TrainPositionFetcher;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import ch.uzh.ifi.hase.soprafs26.websocket.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -20,6 +22,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.*;
 
 
 @Service
@@ -30,6 +34,9 @@ public class GameService {
     private List<Game> activeGames;
 
     private TrainPositionFetcher trainPositionFetcher;
+
+    private final Map<Long, ScheduledFuture<?>> activeTimers = new ConcurrentHashMap<>();
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -93,21 +100,36 @@ public class GameService {
         Long gameId = guessMessage.getLobbyId();
         Long userId = guessMessage.getUserId();
 
+        if (!canSubmitGuess(gameId)){
+            return;
+        }
+
         Game currentGame = getGameById(gameId);
         Integer roundNumber = currentLobby.getCurrentRound();
         List<Round> rounds = currentGame.getRounds();
 
 
         UserGameStatus userGameStatus = new UserGameStatus(userId, true);
-        updateUserGameStatus(userGameStatus, currentLobby);
+        Boolean allAreReady = updateUserGameStatus(userGameStatus, currentLobby);
+
+        if (allAreReady) {
+            ScheduledFuture<?> timer = activeTimers.get(gameId);
+            if (timer != null){
+                timer.cancel(false);
+            }
+            roundEnd(gameId);
+        }
+
+
 
     }
 
-    public void updateUserGameStatus(UserGameStatus userGameStatus, Lobby currentLobby) {
+    public Boolean updateUserGameStatus(UserGameStatus userGameStatus, Lobby currentLobby) {
         Game currentGame = currentLobby.getGame();
         List<Round> rounds = currentGame.getRounds();
         Round currentRound = rounds.get(currentLobby.getCurrentRound());
         List<UserGameStatus> allUsersGameStatuses = currentRound.getAllUserGameStatuses();
+
         int numAreReady = 0;
 
         for (UserGameStatus usGaSt : allUsersGameStatuses) {
@@ -119,13 +141,18 @@ public class GameService {
             }
 
             if (numAreReady == allUsersGameStatuses.size()) {
-                RoundStart(currentLobby);
+                return true;
             }
 
         }
+        return false;
     }
 
-    public void RoundStart(Lobby currentLobby) {
+    public boolean canSubmitGuess(long gameId) {
+        return activeTimers.containsKey(gameId);
+    }
+
+    public void roundStart(Lobby currentLobby) {
         Game currentGame = currentLobby.getGame();
         Long gameId = currentGame.getGameId();
         List<Train> trains = currentGame.getTrains();
@@ -137,6 +164,44 @@ public class GameService {
         RoundStartDTO roundStartDTO = new RoundStartDTO(currentRound.getRoundNumber(), maxRounds, train);
         Message message = new Message(MessageType.ROUND_START, roundStartDTO);
         messagingTemplate.convertAndSend("/topic/game/" + gameId, message);
+
+        ScheduledFuture<?> timer = scheduler.schedule(
+                () -> roundEnd(gameId),
+                45,
+                TimeUnit.SECONDS
+        );
+
+        activeTimers.put(gameId, timer);
+    }
+
+    public void roundEnd(Long gameId) {
+
+        messagingTemplate.convertAndSend("/topic/game/"+ gameId,
+                new Message(MessageType.ROUND_END, null));
+
+        ScheduledFuture<?> lastMessagesTimer = scheduler.schedule(
+                () -> activeTimers.remove(gameId),
+                3,
+                TimeUnit.SECONDS
+        );
+
+        activeTimers.put(gameId, lastMessagesTimer);
+    }
+
+    public void publishScores(Lobby currentLobby) {
+        Game currentGame =  currentLobby.getGame();
+
+        List<Score> totalScores =  currentLobby.getScores();
+
+        List<Score> roundScores = currentGame.getRounds().get(currentLobby.getCurrentRound()).getAllScores();
+
+        ResultDTO resultDTO = new ResultDTO();
+        resultDTO.setTotalScores(totalScores);
+        resultDTO.setRoundScores(roundScores);
+
+        Message message = new Message(MessageType.SCORES, resultDTO);
+
+        messagingTemplate.convertAndSend("/topic/game/" + currentGame.getGameId(), message);
 
 
     }
