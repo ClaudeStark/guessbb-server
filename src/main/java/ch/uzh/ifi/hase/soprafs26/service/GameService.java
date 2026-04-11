@@ -154,7 +154,7 @@ public class GameService {
                 s.setPoints(currentTotal + pointsToAdd);
                 return;
             }
-        }n
+        }
 
         // Fallback: If for some reason the score object doesn't exist yet, create it
         Score newScore = new Score(userId);
