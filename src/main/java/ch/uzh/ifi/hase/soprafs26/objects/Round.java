@@ -12,18 +12,18 @@ public class Round {
     private Train train;
 
     private Map<Long, GuessMessageDTO> guessMessages;
-    private Map<Long, UserGameStatus> allUserStatuses;
+    private Map<Long, UserGameStatus> allUserGameStatuses;
     private Map<Long, Score> scores;
 
     public Round(int roundNumber, Train train,
                  Map<Long, GuessMessageDTO> guessMessages,
-                 Map<Long, UserGameStatus> allUserStatuses,
+                 Map<Long, UserGameStatus> allUserGameStatuses,
                  Map<Long, Score> scores) {
 
         this.roundNumber = roundNumber;
         this.train = train;
         this.guessMessages = guessMessages;
-        this.allUserStatuses = allUserStatuses;
+        this.allUserGameStatuses = allUserGameStatuses;
         this.scores = scores;
     }
 
@@ -39,14 +39,14 @@ public class Round {
         return new ArrayList<>(scores.values());
     }
 
-    public void setUserStatus(Long userId, boolean isReady) {
-        UserGameStatus status = allUserStatuses.get(userId);
+    public void setUserGameStatus(Long userId, boolean isReady) {
+        UserGameStatus status = allUserGameStatuses.get(userId);
         if (status != null) {
             status.setIsReady(isReady);
         }
     }
-    public List<UserGameStatus> getAllUserStatuses() {
-        return new ArrayList<>(allUserStatuses.values());
+    public List<UserGameStatus> getAllUserGameStatuses() {
+        return new ArrayList<>(allUserGameStatuses.values());
     }
 
     public void setGuessMessage(Long userId, GuessMessageDTO guess) {

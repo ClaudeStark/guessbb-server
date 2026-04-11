@@ -112,10 +112,10 @@ public class GameService {
         }
 
         Game currentGame = getGameById(gameId);
-        Integer roundNumber = currentLobby.getCurrentRound();
+        int roundNumber = currentLobby.getCurrentRound() -1;
         List<Round> rounds = currentGame.getRounds();
 
-        Round currentRound = rounds.get(roundNumber - 1);
+        Round currentRound = rounds.get(roundNumber);
         Train currentTrain = currentRound.getTrain();
         Long playerGuessX = guessMessage.getXcoordinate();
         Long playerGuessY = guessMessage.getYcoordinate();
@@ -125,7 +125,9 @@ public class GameService {
 
         currentRound.setScore(userId, score);
         currentRound.setGuessMessage(userId, guessMessage);
-        // TODO : Send Score back to frontend subscribers
+
+        updateLobbyTotalScore(currentLobby, userId, score);
+
         UserGameStatus userGameStatus = new UserGameStatus(userId, true);
         Boolean allAreReady = updateUserGameStatus(userGameStatus, currentLobby);
 
@@ -142,6 +144,24 @@ public class GameService {
 
     }
 
+    private void updateLobbyTotalScore(Lobby lobby, Long userId, int pointsToAdd) {
+        List<Score> totalScores = lobby.getScores();
+
+        for (Score s : totalScores) {
+            if (s.getUserId().equals(userId)) {
+                // Assuming Score class has getScore() and setScore()
+                int currentTotal = s.getPoints();
+                s.setPoints(currentTotal + pointsToAdd);
+                return;
+            }
+        }n
+
+        // Fallback: If for some reason the score object doesn't exist yet, create it
+        Score newScore = new Score(userId);
+        newScore.setPoints(pointsToAdd);
+        totalScores.add(newScore);
+    }
+
 
     public Boolean updateUserGameStatus(UserGameStatus userGameStatus, Lobby currentLobby) {
         Game currentGame = currentLobby.getGame();
@@ -149,20 +169,17 @@ public class GameService {
         Round currentRound =  rounds.get(currentLobby.getCurrentRound());
         List<UserGameStatus> allUsersGameStatuses = currentRound.getAllUserGameStatuses();
 
-        currentRound.setUserStatus(userGameStatus.getUserId(), userGameStatus.getIsReady());
+        currentRound.setUserGameStatus(userGameStatus.getUserId(), userGameStatus.getIsReady());
         int numAreReady = 0;
 
         for (UserGameStatus usGaSt : allUsersGameStatuses) {
-            if (usGaSt.getUserId().equals(userGameStatus.getUserId())) {
-                usGaSt.setIsReady(userGameStatus.getIsReady());
-            }
             if (usGaSt.getIsReady() == true) {
                 numAreReady += 1;
             }
 
-            if (numAreReady == allUsersGameStatuses.size()) {
-                return true;
-            }
+        if (numAreReady == allUsersGameStatuses.size()) {
+            return true;
+        }
 
         }
         return false;
@@ -281,6 +298,6 @@ public class GameService {
         double dx = playerX - train.getCurrentX();
         double dy = playerY - train.getCurrentY();
         double guessDistance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-        return Math.round(guessDistance * 1000.0);
+        return Math.round(guessDistance / 1000.0);
     }
 }
