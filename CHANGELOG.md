@@ -1,3 +1,22 @@
+# [1.1.0](https://github.com/remoweirich/sopra-fs26-group-15-server/compare/v1.0.0...v1.1.0) (2026-04-13)
+
+
+### Bug Fixes
+
+* **Game start:** fix broken logic of updateUserGameStatus before any round has started. ([4cc0e8e](https://github.com/remoweirich/sopra-fs26-group-15-server/commit/4cc0e8ec45e8535e10b9f09a2a4d394c54ef5133))
+* **GameService:** fix distance never getting added to round and fix logicbug in publishScores ([832c93d](https://github.com/remoweirich/sopra-fs26-group-15-server/commit/832c93dd2d83316a60f4e24b0e24d3f88a6a9bf7))
+* **GameService:** resultDTO now always receive/sends a value instead of null ([fff189f](https://github.com/remoweirich/sopra-fs26-group-15-server/commit/fff189fec82bdae86c352433b2b28390a282a05b))
+* **Scoring:** update Overall game Score for a lobby ([276d108](https://github.com/remoweirich/sopra-fs26-group-15-server/commit/276d10883eada834bd0ebd2f896ccbeae3920f20))
+
+
+### Features
+
+* **game scoring:** implemented absolute distance scoring → to be replaced by dynamic system scoring formula ([539d51c](https://github.com/remoweirich/sopra-fs26-group-15-server/commit/539d51c3a1156b11aeb93a8300a88017f838e2d8))
+* **GameService:** updateGameStatus & publishScores & more ([b28dfe0](https://github.com/remoweirich/sopra-fs26-group-15-server/commit/b28dfe0b50d57cdbfbca10df10c897897d461b3a))
+* publishScores unfinished ([920f556](https://github.com/remoweirich/sopra-fs26-group-15-server/commit/920f55605ab5e830c1372dfc952bcf8e5024cbfc))
+* RoundStart method to publish relevant data to client and RoundStartDTO with said data stored created ([03b226c](https://github.com/remoweirich/sopra-fs26-group-15-server/commit/03b226c4c6826ac27451dc6ad4a7fe90b666f3b0))
+* timer logic implemented ([0769a54](https://github.com/remoweirich/sopra-fs26-group-15-server/commit/0769a54baa5342cbb206f44870b29a159957735b))
+
 # 1.0.0 (2026-04-03)
 
 
