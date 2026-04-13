@@ -128,11 +128,12 @@ public class GameService {
         Long playerGuessX = guessMessage.getXcoordinate();
         Long playerGuessY = guessMessage.getYcoordinate();
 
-        int score = calculateScore(currentTrain, playerGuessX, playerGuessY);
-        double distance = calculateGuessDistance(currentTrain, playerGuessX, playerGuessY);
+        double guessDistance = calculateGuessDistance(currentTrain, playerGuessX, playerGuessY);
+        int score = calculateScore(currentTrain, playerGuessX, playerGuessY, guessDistance);
 
         currentRound.setScore(userId, score);
         currentRound.setGuessMessage(userId, guessMessage);
+        currentRound.setDistances(userId, guessDistance);
 
         updateLobbyTotalScore(currentLobby, userId, score);
 
@@ -266,7 +267,7 @@ public class GameService {
 
         List<Score> totalScores =  currentLobby.getScores();
 
-        Map<Long, Score> roundScores = currentGame.getRounds().get(currentLobby.getCurrentRound()).getAllScores();
+        Map<Long, Score> roundScores = currentRound.getAllScores();
         Map<Long, Double> distances = currentRound.getDistances();
         List<UserResult> userResults = new ArrayList<>();
 
@@ -303,14 +304,8 @@ public class GameService {
      *   errorRatio = 0.50 →   21 pts  (poor)
      *   errorRatio = 1.00 →    5 pts  (terrible)
      */
-    public int calculateScore(Train train, long playerX, long playerY) {
-
-        // 1. Euclidean distance between the guess and the train's actual position
-        double dx = playerX - train.getCurrentX();
-        double dy = playerY - train.getCurrentY();
-        double guessDistance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-
-        // 2. Total length of the train line (origin → destination)
+    public int calculateScore(Train train, long playerX, long playerY, double guessDistance) {
+        // 1. Total length of the train line (origin → destination)
         double ldx = train.getLineDestination().getXCoordinate()
                 - train.getLineOrigin().getXCoordinate();
         double ldy = train.getLineDestination().getYCoordinate()
@@ -323,16 +318,16 @@ public class GameService {
             totalLineLength = 1000.0;
         }
 
-        // 3. Relative error ratio (clamped — can't do worse than a full line length)
+        // 2. Relative error ratio (clamped — can't do worse than a full line length)
         double errorRatio = guessDistance / totalLineLength;
 
-        // 4. Gaussian decay: k = ln(1000/5) ≈ 5.298
+        // 3. Gaussian decay: k = ln(1000/5) ≈ 5.298
         //    Chosen so that errorRatio = 1.0 → score ≈ 5 (near-zero, not exactly 0)
         final double k = Math.log(1000.0 / 5.0); // ≈ 5.298
 
         double rawScore = 1000.0 * Math.exp(-k * Math.pow(errorRatio, 2));
 
-        // 5. Round and clamp to [0, 1000]
+        // 4. Round and clamp to [0, 1000]
         return (int) Math.min(1000, Math.max(0, Math.round(rawScore)));
     }
 
@@ -342,7 +337,6 @@ public class GameService {
     public double calculateGuessDistance(Train train, Long playerX, Long playerY) {
         double dx = playerX - train.getCurrentX();
         double dy = playerY - train.getCurrentY();
-        double guessDistance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-        return Math.round(guessDistance / 1000.0);
+        return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
     }
 }
