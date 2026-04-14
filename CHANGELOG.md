@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/remoweirich/sopra-fs26-group-15-server/compare/v1.1.0...v1.2.0) (2026-04-14)
+
+
+### Features
+
+* added websockets endpoint in LobbyWebSocketController that removes User from lobby ([f01f7cb](https://github.com/remoweirich/sopra-fs26-group-15-server/commit/f01f7cb2abd34118a6a280eedb3791b402dd35b6))
+
 # [1.1.0](https://github.com/remoweirich/sopra-fs26-group-15-server/compare/v1.0.0...v1.1.0) (2026-04-13)
 
 
