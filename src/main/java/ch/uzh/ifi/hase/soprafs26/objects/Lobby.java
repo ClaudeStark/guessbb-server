@@ -61,6 +61,7 @@ public class Lobby {
     public void setUsers(Map<Long, User> users) {this.users = users;}
     public void addUser(long userId, User user) {this.users.put(userId, user);}
     public void removeUser(Long userId) {this.users.remove(userId);}
+    public boolean existsUser(Long userId) {return this.users.containsKey(userId);}
 
     public List<Round> getRounds() {return rounds;}
     public void setRounds(List<Round> rounds) {this.rounds = rounds;}

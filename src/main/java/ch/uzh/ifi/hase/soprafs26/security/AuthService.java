@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs26.security;
 
+import ch.uzh.ifi.hase.soprafs26.service.LobbyService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ch.uzh.ifi.hase.soprafs26.repository.UserRepository;
@@ -12,9 +13,11 @@ import org.springframework.web.server.ResponseStatusException;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final LobbyService lobbyService;
 
-    public AuthService(UserRepository userRepository) {
+    public AuthService(UserRepository userRepository, LobbyService lobbyService) {
         this.userRepository = userRepository;
+        this.lobbyService = lobbyService;
     }
 
     public Boolean authUser(AuthHeader authHeader) {
@@ -29,5 +32,12 @@ public class AuthService {
             return false;
         }
         return user.getToken().equals(authHeader.getToken());
+    }
+
+    public Boolean isUserInLobby(Long userId, String token, Long lobbyId) {
+        if (!authUser(new AuthHeader(userId, token))) {
+            return false;
+        }
+        return lobbyService.getLobbyById(lobbyId).existsUser(userId);
     }
 }

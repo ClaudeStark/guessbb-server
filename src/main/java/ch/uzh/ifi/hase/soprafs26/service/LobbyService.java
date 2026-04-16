@@ -37,15 +37,15 @@ import java.util.*;
 public class LobbyService {
 
     private List<Lobby> activeLobbies = new ArrayList<>();
-    private final AuthService authService;
+    //private final AuthService authService;
     private final UserService userService;
     private final GameService gameService;
     private final SimpMessagingTemplate messagingTemplate;
     private long newLobbyId = 1L;
 
 
-    public LobbyService(AuthService authService, UserService userService, GameService gameService, SimpMessagingTemplate messagingTemplate, UserRepository userRepository) {
-        this.authService = authService;
+    public LobbyService(/*AuthService authService,*/ UserService userService, GameService gameService, SimpMessagingTemplate messagingTemplate, UserRepository userRepository) {
+        //this.authService = authService;
         this.userService = userService;
         this.gameService = gameService;
         this.messagingTemplate = messagingTemplate;

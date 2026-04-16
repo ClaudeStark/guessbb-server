@@ -42,7 +42,7 @@ public class GameService {
 
     private Boolean scoresPublished = false;
 
-    public GameService(AuthService authService, TrainPositionFetcher trainPositionFetcher, SimpMessagingTemplate messagingTemplate) {
+    public GameService(/*AuthService authService,*/ TrainPositionFetcher trainPositionFetcher, SimpMessagingTemplate messagingTemplate) {
         //this.authService = authService;
         this.trainPositionFetcher = trainPositionFetcher;
         this.messagingTemplate = messagingTemplate;

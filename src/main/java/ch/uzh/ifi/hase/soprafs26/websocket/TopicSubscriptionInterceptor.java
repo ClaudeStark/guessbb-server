@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs26.websocket;
 
+import ch.uzh.ifi.hase.soprafs26.security.AuthService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -10,6 +12,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TopicSubscriptionInterceptor implements ChannelInterceptor {
+
+    private final AuthService authService;
+
+    @Autowired
+    public TopicSubscriptionInterceptor(AuthService authService) {
+        this.authService = authService;
+    }
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -64,8 +73,9 @@ public class TopicSubscriptionInterceptor implements ChannelInterceptor {
 
     private boolean canAccessLobby(String userId, String token, String lobbyId) {
         // TODO: Call authService to check if the user is actually a member of this lobby in the database
-        long id = Long.parseLong(lobbyId);
+        long lobbyById = Long.parseLong(lobbyId);
+        long userById = Long.parseLong(userId);
 
-        return true;
+        return authService.isUserInLobby(userById, token, lobbyById);
     }
 }
