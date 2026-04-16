@@ -24,7 +24,7 @@ public class Lobby {
 
     private LobbyVisibility visibility;
 
-    private List<User> users;
+    private Map<Long, User> users;
 
     private List<Round> rounds;
 
@@ -57,10 +57,10 @@ public class Lobby {
     public LobbyVisibility getVisibility() {return visibility;}
     public void setVisibility(LobbyVisibility visibility) {this.visibility = visibility;}
 
-    public List<User> getUsers() {return users;}
-    public void setUsers(List<User> users) {this.users = users;}
-    public void addUser(User user) {this.users.add(user);}
-    public void removeUser(User user) {this.users.remove(user);}
+    public List<User> getUsers() {return new ArrayList<>(users.values());}
+    public void setUsers(Map<Long, User> users) {this.users = users;}
+    public void addUser(long userId, User user) {this.users.put(userId, user);}
+    public void removeUser(Long userId) {this.users.remove(userId);}
 
     public List<Round> getRounds() {return rounds;}
     public void setRounds(List<Round> rounds) {this.rounds = rounds;}

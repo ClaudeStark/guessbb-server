@@ -92,9 +92,9 @@ public class LobbyService {
 
         newLobby.setVisibility(createLobbyPostDTO.getVisibility());
 
-        List<User> users = new ArrayList<>();
+        Map<Long, User> users = new HashMap<>();
         User currentUser = userRepository.findById(createLobbyPostDTO.getUserId()).orElse(null);
-        users.add(currentUser);
+        users.put(createLobbyPostDTO.getUserId(), currentUser);
         newLobby.setUsers(users);
 
         newLobby.setCurrentRound(0);
@@ -132,7 +132,7 @@ public class LobbyService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Lobby is full");
         }
         // add user to lobby
-        lobby.addUser(user);
+        lobby.addUser(userId, user);
 
         //if Lobby is now full: if game is public, start game, else wait for admin to start the game
         if (lobby.getUsers().size() >= lobby.getSize() && lobby.getVisibility() == LobbyVisibility.PUBLIC) {
@@ -162,14 +162,12 @@ public class LobbyService {
 
     public void leaveLobby(Long lobbyId, Long userId) {
         Lobby lobby = getLobbyById(lobbyId);
-
-        User user = userService.getUserById(userId);
-
+        //change from user based to userId since I (Shadi) changed users to be a map indexed by userId
         //remove user from lobby
-        lobby.removeUser(user);
+        lobby.removeUser(userId);
 
         //if user was admin, assign new admin
-        if (lobby.getAdmin().getUserId().equals(user.getUserId())) {
+        if (lobby.getAdmin().getUserId().equals(userId)) {
             if (!lobby.getUsers().isEmpty()) {
                 User newAdminUser = lobby.getUsers().get(0);
                 Admin newAdmin = new Admin(newAdminUser.getUserId(), newAdminUser.getToken());
