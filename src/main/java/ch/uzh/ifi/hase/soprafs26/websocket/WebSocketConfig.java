@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs26.websocket;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -11,6 +12,15 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private final TopicSubscriptionInterceptor topicSubscriptionInterceptor;
+
+
+    @Autowired
+    public WebSocketConfig(TopicSubscriptionInterceptor topicSubscriptionInterceptor) {
+        this.topicSubscriptionInterceptor = topicSubscriptionInterceptor;
+    }
+
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -27,7 +37,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(new TopicSubscriptionInterceptor());
+        registration.interceptors(topicSubscriptionInterceptor);
     }
 
 }

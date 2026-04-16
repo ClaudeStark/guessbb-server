@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs26.websocket;
 
 import ch.uzh.ifi.hase.soprafs26.security.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -16,7 +17,7 @@ public class TopicSubscriptionInterceptor implements ChannelInterceptor {
     private final AuthService authService;
 
     @Autowired
-    public TopicSubscriptionInterceptor(AuthService authService) {
+    public TopicSubscriptionInterceptor(@Lazy AuthService authService) {
         this.authService = authService;
     }
 
