@@ -63,17 +63,10 @@ public class LobbyService {
 
     public LobbyAccessDTO createLobby(CreateLobbyPostDTO createLobbyPostDTO, boolean isGuest, Long userId, String token) {
         if (isGuest) {
-            User guestUser = new User();
-            guestUser.setUsername("guest_" + UUID.randomUUID().toString().substring(0, 8));
-            guestUser.setPassword(UUID.randomUUID().toString()); // dummy password
-            guestUser.setEmail(UUID.randomUUID().toString() + "@guest.com"); // dummy email
-            guestUser.setIsGuest(true);
+            User guestUser = createGuestUser();
 
-            guestUser = userService.registerUser(guestUser);
-            User loggedInGuest = userService.loginUser(guestUser.getUsername(), guestUser.getPassword());
-
-            userId = loggedInGuest.getUserId();
-            token = loggedInGuest.getToken();
+            userId = guestUser.getUserId();
+            token = guestUser.getToken();
         }
 
         Lobby newLobby = new Lobby();
@@ -113,15 +106,25 @@ public class LobbyService {
 
         activeLobbies.add(newLobby);
 
-        LobbyAccessDTO dto = DTOMapper.INSTANCE.convertEntityToLobbyAccessDTO(newLobby);
+        LobbyAccessDTO dto = DTOMapper.INSTANCE.convertLobbyToLobbyAccessDTO(newLobby);
         dto.setUserId(userId);
         dto.setToken(token);
 
         return dto;
     }
 
-    public Lobby joinLobby(Long userId, Long lobbyId, String lobbyCode, Boolean isGuest) {
+    public LobbyAccessDTO joinLobby(Long userId,String token, Long lobbyId, String lobbyCode, Boolean isGuest) {
+        LobbyAccessDTO lobbyAccessDTO = new LobbyAccessDTO(lobbyId, lobbyCode);
+
+
+        if (isGuest) {
+            User guestUser = createGuestUser();
+            userId = guestUser.getUserId();
+            token = guestUser.getToken();
+        }
+
         Lobby lobby = getLobbyById(lobbyId);
+
 
         User user = userService.getUserById(userId);
 
@@ -132,7 +135,12 @@ public class LobbyService {
 
         //Check if user is already in lobby
         if(lobby.existsUser(userId)) {
-            return lobby;
+            lobbyAccessDTO.setLobbyCode(lobbyCode);
+            lobbyAccessDTO.setLobbyId(lobbyId);
+            lobbyAccessDTO.setUserId(userId);
+            lobbyAccessDTO.setToken(token);
+
+            return lobbyAccessDTO;
         }
 
 
@@ -154,7 +162,10 @@ public class LobbyService {
         Message message = new Message(MessageType.LOBBY_STATE, myLobbyDTO);
         messagingTemplate.convertAndSend("/topic/lobby/" + lobby.getLobbyId(), message);
 
-        return lobby;
+        lobbyAccessDTO.setUserId(userId);
+        lobbyAccessDTO.setToken(token);
+
+        return lobbyAccessDTO;
     }
 
     public void startGame(Long lobbyId) {
@@ -242,7 +253,15 @@ public class LobbyService {
                 .anyMatch(lobby -> lobby.getLobbyCode().equals(code));
     }
 
-    //public User createGuestUser()
+    public User createGuestUser() {
+        User guestUser = new User();
+        guestUser.setUsername("guest_" + UUID.randomUUID().toString().substring(0, 8));
+        guestUser.setPassword(UUID.randomUUID().toString()); // dummy password
+        guestUser.setEmail(UUID.randomUUID().toString() + "@guest.com"); // dummy email
+        guestUser.setIsGuest(true);
 
-
+        guestUser = userService.registerUser(guestUser);
+        User loggedInGuest = userService.loginUser(guestUser.getUsername(), guestUser.getPassword());
+        return loggedInGuest;
+    }
 }
