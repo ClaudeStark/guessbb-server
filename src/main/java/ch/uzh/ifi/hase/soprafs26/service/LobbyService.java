@@ -120,7 +120,7 @@ public class LobbyService {
         return dto;
     }
 
-    public Lobby joinLobby(Long userId, Long lobbyId, String lobbyCode) {
+    public Lobby joinLobby(Long userId, Long lobbyId, String lobbyCode, Boolean isGuest) {
         Lobby lobby = getLobbyById(lobbyId);
 
         User user = userService.getUserById(userId);
@@ -232,6 +232,8 @@ public class LobbyService {
         return activeLobbies.stream()
                 .anyMatch(lobby -> lobby.getLobbyCode().equals(code));
     }
+
+    //public User createGuestUser()
 
 
 }
