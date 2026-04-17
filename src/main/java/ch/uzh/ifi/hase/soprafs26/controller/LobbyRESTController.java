@@ -103,11 +103,11 @@ public class LobbyRESTController {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
             }
             isGuest = false;
-            lobby = lobbyService.joinLobby(userId, lobbyId, lobbyCodePostDTO.getLobbyCode(), isGuest);
+            lobbyAccessDTO = lobbyService.joinLobby(userId, token, lobbyId, lobbyCodePostDTO.getLobbyCode(), isGuest);
         } catch (ResponseStatusException e){
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                 isGuest = true;
-                lobby = lobbyService.joinLobby(userId, lobbyId, lobbyCodePostDTO.getLobbyCode(), isGuest);
+                lobbyAccessDTO = lobbyService.joinLobby(userId,token, lobbyId, lobbyCodePostDTO.getLobbyCode(), isGuest);
 
             } else {
                 throw e;
@@ -115,8 +115,9 @@ public class LobbyRESTController {
 
         }
         // 3. Mapping (Wichtig: lobbyAccessDTO darf nicht null sein!)
-        return DTOMapper.INSTANCE.convertEntityToLobbyAccessDTO(lobby);
-    }
+        //lobbyAccessDTO = DTOMapper.INSTANCE.convertLobbyToLobbyAccessDTO(lobby);
+
+        return lobbyAccessDTO;    }
 
     @GetMapping("/lobbies/debug")
     @ResponseStatus(HttpStatus.OK)
