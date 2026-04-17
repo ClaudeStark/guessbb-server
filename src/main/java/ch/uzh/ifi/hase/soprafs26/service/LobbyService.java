@@ -115,13 +115,12 @@ public class LobbyService {
 
     public LobbyAccessDTO joinLobby(Long userId,String token, Long lobbyId, String lobbyCode, Boolean isGuest) {
         LobbyAccessDTO lobbyAccessDTO = new LobbyAccessDTO(lobbyId, lobbyCode);
-        lobbyAccessDTO.setUserId(userId);
-        lobbyAccessDTO.setToken(token);
+
 
         if (isGuest) {
             User guestUser = createGuestUser();
-            lobbyAccessDTO.setToken(guestUser.getToken());
-            lobbyAccessDTO.setUserId(guestUser.getUserId());
+            userId = guestUser.getUserId();
+            token = guestUser.getToken();
         }
 
         Lobby lobby = getLobbyById(lobbyId);
@@ -162,6 +161,9 @@ public class LobbyService {
         MyLobbyDTO myLobbyDTO = DTOMapper.INSTANCE.convertEntityToMyLobbyDTO(lobby);
         Message message = new Message(MessageType.LOBBY_STATE, myLobbyDTO);
         messagingTemplate.convertAndSend("/topic/lobby/" + lobby.getLobbyId(), message);
+
+        lobbyAccessDTO.setUserId(userId);
+        lobbyAccessDTO.setToken(token);
 
         return lobbyAccessDTO;
     }

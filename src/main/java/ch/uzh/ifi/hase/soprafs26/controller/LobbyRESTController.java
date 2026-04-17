@@ -93,7 +93,6 @@ public class LobbyRESTController {
 
         boolean isGuest;
         LobbyAccessDTO lobbyAccessDTO = null;
-        Lobby lobby = null;
 
         AuthHeader authHeader = new AuthHeader(userId, token);
         try{
@@ -107,7 +106,7 @@ public class LobbyRESTController {
         } catch (ResponseStatusException e){
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                 isGuest = true;
-                lobbyAccessDTO = lobbyService.joinLobby(userId,token, lobbyId, lobbyCodePostDTO.getLobbyCode(), isGuest);
+                lobbyAccessDTO = lobbyService.joinLobby(null,null, lobbyId, lobbyCodePostDTO.getLobbyCode(), isGuest);
 
             } else {
                 throw e;
