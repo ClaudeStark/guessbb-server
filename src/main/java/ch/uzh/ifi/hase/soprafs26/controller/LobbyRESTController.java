@@ -38,7 +38,7 @@ public class LobbyRESTController {
         boolean isGuest;
         LobbyAccessDTO lobbyAccessDTO = null;
 
-        AuthHeader authHeader = new AuthHeader(createLobbyPostDTO.getUserId(), token);
+            AuthHeader authHeader = new AuthHeader(createLobbyPostDTO.getUserId(), token);
         try{
             boolean isAuthenticated = authService.authUser(authHeader);
 
@@ -108,4 +108,14 @@ public class LobbyRESTController {
         // 3. Mapping (Wichtig: lobbyAccessDTO darf nicht null sein!)
         return DTOMapper.INSTANCE.convertEntityToLobbyAccessDTO(lobby);
     }
+
+    @GetMapping("/lobbies/debug")
+    @ResponseStatus(HttpStatus.OK)
+        @ResponseBody
+    public List<Lobby> getLobbiesDebug() {
+        List<Lobby> lobbies = lobbyService.getAllLobbies();
+
+        return lobbies;
+    }
+
 }

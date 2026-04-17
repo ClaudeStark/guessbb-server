@@ -129,6 +129,13 @@ public class LobbyService {
         if (!lobby.getLobbyCode().equals(lobbyCode)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Incorrect lobby code");
         }
+
+        //Check if user is already in lobby
+        if(lobby.existsUser(userId)) {
+            return lobby;
+        }
+
+
         // Check whether the lobby is full
         if (lobby.getUsers().size() >= lobby.getSize()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Lobby is full");
