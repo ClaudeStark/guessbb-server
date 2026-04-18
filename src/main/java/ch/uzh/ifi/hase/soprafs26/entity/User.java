@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs26.entity;
 
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import ch.uzh.ifi.hase.soprafs26.constant.UserStatus;
 
 import java.io.Serializable;
@@ -62,6 +61,9 @@ public class User implements Serializable {
 	@JoinTable(name = "friends", joinColumns = @JoinColumn(name = "userId"), inverseJoinColumns = @JoinColumn(name = "friendId"))
 
 	private List<User> friends = new ArrayList<>();
+
+    @Column(nullable = false)
+    private Boolean isGuest;
 
 	public Long getUserId() {
 		return userId;
@@ -142,5 +144,9 @@ public class User implements Serializable {
 	public void setFriends(List<User> friends) {
 		this.friends = friends;
 	}
+
+    public Boolean getIsGuest() {return isGuest;}
+
+    public void setIsGuest(Boolean isGuest) {this.isGuest = isGuest;}
 
 }

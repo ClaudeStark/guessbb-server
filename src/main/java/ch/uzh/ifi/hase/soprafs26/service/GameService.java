@@ -43,7 +43,7 @@ public class GameService {
 
     private Boolean scoresPublished = false;
 
-    public GameService(AuthService authService, TrainPositionFetcher trainPositionFetcher, SimpMessagingTemplate messagingTemplate) {
+    public GameService(/*AuthService authService,*/ TrainPositionFetcher trainPositionFetcher, SimpMessagingTemplate messagingTemplate) {
         //this.authService = authService;
         this.trainPositionFetcher = trainPositionFetcher;
         this.messagingTemplate = messagingTemplate;
@@ -104,7 +104,7 @@ public class GameService {
 
         return newGame;
 
-        //TODO: call Round start, allow for Frontend to subscribe to Round start messages, and trigger the timer for the first round
+        //DoneTODO: call Round start, allow for Frontend to subscribe to Round start messages, and trigger the timer for the first round
 
         } catch (Exception e) {
             throw new Error("Failed to fetch mock trains", e);
