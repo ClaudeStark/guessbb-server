@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ch.uzh.ifi.hase.soprafs26.constant.LobbyState;
+import org.springframework.context.event.EventListener;
+import ch.uzh.ifi.hase.soprafs26.events.GameEndedEvent;
+
 
 import java.security.SecureRandom;
 
@@ -48,6 +51,11 @@ public class LobbyService {
         this.messagingTemplate = messagingTemplate;
         this.userRepository = userRepository;
         this.gameRepository = gameRepository;
+    }
+
+    @EventListener
+    public void onGameEnded(GameEndedEvent event) {
+        activeLobbies.removeIf(l -> l.getLobbyId().equals(event.getGameId()));
     }
 
     public List<Lobby> getAllLobbies() {

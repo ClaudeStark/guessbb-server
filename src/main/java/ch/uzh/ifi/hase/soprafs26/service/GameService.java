@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs26.service;
 
 import ch.uzh.ifi.hase.soprafs26.constant.MessageType;
 import ch.uzh.ifi.hase.soprafs26.entity.GameResult;
+import ch.uzh.ifi.hase.soprafs26.events.GameEndedEvent;
 import ch.uzh.ifi.hase.soprafs26.objects.Game;
 import ch.uzh.ifi.hase.soprafs26.entity.User;
 import ch.uzh.ifi.hase.soprafs26.objects.*;
@@ -14,6 +15,7 @@ import ch.uzh.ifi.hase.soprafs26.rest.dto.RoundStartDTO;
 import ch.uzh.ifi.hase.soprafs26.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs26.security.AuthService;
 import ch.uzh.ifi.hase.soprafs26.trains.TrainPositionFetcher;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import ch.uzh.ifi.hase.soprafs26.websocket.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -40,13 +42,14 @@ public class GameService {
     private final GameRepository gameRepository;
     private final Map<Long, ScheduledFuture<?>> activeTimers = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
-
+    private final ApplicationEventPublisher eventPublisher;
     private final SimpMessagingTemplate messagingTemplate;
 
     private Map<Long, Boolean> scoresPublished = new HashMap<>();
 
-    public GameService(/*AuthService authService,*/ TrainPositionFetcher trainPositionFetcher, GameRepository gameRepository, SimpMessagingTemplate messagingTemplate) {
+    public GameService(/*AuthService authService,*/ TrainPositionFetcher trainPositionFetcher, GameRepository gameRepository, SimpMessagingTemplate messagingTemplate, ApplicationEventPublisher eventPublisher) {
         //this.authService = authService;
+        this.eventPublisher = eventPublisher;
         this.trainPositionFetcher = trainPositionFetcher;
         this.gameRepository = gameRepository;
         this.messagingTemplate = messagingTemplate;
@@ -329,14 +332,16 @@ public class GameService {
             userResults.add(new UserResult(userId, totalPoints, roundPoints, xCoordinate, yCoordinate, distance));
         }
 
-        if (currentLobby.getMaxRounds() == currentRoundNumber){
-            gameTearDown(currentLobby);
-        }
 
         ResultDTO resultDTO = new ResultDTO(currentRoundNumber, userResults, train);
         Message message = new Message(MessageType.SCORES, resultDTO);
         messagingTemplate.convertAndSend("/topic/game/" + gameId, message);
 
+
+        if (currentLobby.getMaxRounds() == currentRoundNumber){
+            System.out.println("call GameTearDown for game  " + gameId);
+            gameTearDown(currentLobby);
+        }
 
     }
 
@@ -412,6 +417,10 @@ public class GameService {
         gameRepository.flush();
         activeTimers.remove(gameId);
         scoresPublished.remove(gameId);
+
+        eventPublisher.publishEvent(new GameEndedEvent(this, gameId));
+
+
         activeGames.remove(game);
         currentLobby.setGame(null);
         System.out.println("Game " + game.getGameId() + " has ended and been removed from active games.");

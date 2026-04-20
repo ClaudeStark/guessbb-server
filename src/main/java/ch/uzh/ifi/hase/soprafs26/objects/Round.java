@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs26.objects;
 
 import ch.uzh.ifi.hase.soprafs26.rest.dto.GuessMessageDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,7 @@ public class Round {
             score.setPoints(points);
         }
     }
+
     public Map<Long, Score> getAllScores() {
         return this.scores;
     }
@@ -49,6 +51,8 @@ public class Round {
             status.setIsReady(isReady);
         }
     }
+
+    @JsonIgnore
     public List<UserGameStatus> getAllUserGameStatuses() {
         return new ArrayList<>(allUserGameStatuses.values());
     }
