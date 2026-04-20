@@ -2,9 +2,11 @@ package ch.uzh.ifi.hase.soprafs26.service;
 
 
 import ch.uzh.ifi.hase.soprafs26.constant.MessageType;
+import ch.uzh.ifi.hase.soprafs26.entity.GameResult;
 import ch.uzh.ifi.hase.soprafs26.objects.Game;
 import ch.uzh.ifi.hase.soprafs26.entity.User;
 import ch.uzh.ifi.hase.soprafs26.objects.*;
+import ch.uzh.ifi.hase.soprafs26.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs26.rest.dto.GuessMessageDTO;
 import ch.uzh.ifi.hase.soprafs26.rest.dto.MyLobbyDTO;
 import ch.uzh.ifi.hase.soprafs26.rest.dto.ResultDTO;
@@ -35,17 +37,18 @@ public class GameService {
     private List<Game> activeGames;
 
     private TrainPositionFetcher trainPositionFetcher;
-
+    private final GameRepository gameRepository;
     private final Map<Long, ScheduledFuture<?>> activeTimers = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 
     private final SimpMessagingTemplate messagingTemplate;
 
-    private Boolean scoresPublished = false;
+    private Map<Long, Boolean> scoresPublished = new HashMap<>();
 
-    public GameService(/*AuthService authService,*/ TrainPositionFetcher trainPositionFetcher, SimpMessagingTemplate messagingTemplate) {
+    public GameService(/*AuthService authService,*/ TrainPositionFetcher trainPositionFetcher, GameRepository gameRepository, SimpMessagingTemplate messagingTemplate) {
         //this.authService = authService;
         this.trainPositionFetcher = trainPositionFetcher;
+        this.gameRepository = gameRepository;
         this.messagingTemplate = messagingTemplate;
         this.activeGames = new ArrayList<>();
     }
@@ -73,6 +76,8 @@ public class GameService {
         List<User> players = currentLobby.getUsers();
 
         Map<Long, UserGameStatus> connectedPlayers = new HashMap<>();
+        Long gameId = currentLobby.getLobbyId();
+        scoresPublished.put(gameId, false);
 
         for (int i = 0; i < currentLobby.getMaxRounds(); i++) {
             Map<Long, UserGameStatus> roundUserStatus = new HashMap<>();
@@ -87,14 +92,14 @@ public class GameService {
                 score.setPoints(0);
                 currentLobby.setScore(userId, score);
                 roundUserStatus.put(userId, new UserGameStatus(userId, false));
-                roundGuesses.put(userId, new GuessMessageDTO(currentLobby.getLobbyId(), userId));
+                roundGuesses.put(userId, new GuessMessageDTO(gameId, userId));
                 roundScores.put(userId, new Score(userId));
             }
 
             rounds.add(new Round(i+1, trains.get(i), roundGuesses, roundUserStatus, roundScores, roundDistances));
         }
 
-        Game newGame = new Game(currentLobby.getLobbyId(), rounds, trains, connectedPlayers);
+        Game newGame = new Game(gameId, rounds, trains, connectedPlayers);
 
         activeGames.add(newGame);
 
@@ -238,15 +243,12 @@ public class GameService {
     }
 
     public void roundStart(Lobby currentLobby) {
-
-        
-
-        scoresPublished = false;
         int currentRoundNumber =  currentLobby.getCurrentRound()+1;
         currentLobby.setCurrentRound(currentRoundNumber);
 
         Game currentGame = currentLobby.getGame();
         Long gameId = currentGame.getGameId();
+        scoresPublished.put(gameId, false);
 
         Train trainWithoutCoordinates = new Train(currentGame.getTrains().get(currentRoundNumber-1));
         trainWithoutCoordinates.setCurrentX(0);
@@ -287,14 +289,15 @@ public class GameService {
     }
 
     public void allowedToPublish(Lobby currentLobby) {
-        if (!scoresPublished) {
+        if (!scoresPublished.get(currentLobby.getLobbyId())) {
             publishScores(currentLobby);
         }
     }
 
     public void publishScores(Lobby currentLobby) {
-        scoresPublished = true;
         Game currentGame =  currentLobby.getGame();
+        Long gameId = currentGame.getGameId();
+        scoresPublished.put(gameId, true);
         int currentRoundNumber = currentLobby.getCurrentRound();
         Train train = currentGame.getTrains().get(currentRoundNumber-1);
         Round currentRound =  currentGame.getRounds().get(currentRoundNumber-1);
@@ -326,9 +329,13 @@ public class GameService {
             userResults.add(new UserResult(userId, totalPoints, roundPoints, xCoordinate, yCoordinate, distance));
         }
 
+        if (currentLobby.getMaxRounds() == currentRoundNumber){
+            gameTearDown(currentLobby);
+        }
+
         ResultDTO resultDTO = new ResultDTO(currentRoundNumber, userResults, train);
         Message message = new Message(MessageType.SCORES, resultDTO);
-        messagingTemplate.convertAndSend("/topic/game/" + currentGame.getGameId(), message);
+        messagingTemplate.convertAndSend("/topic/game/" + gameId, message);
 
 
     }
@@ -391,5 +398,23 @@ public class GameService {
         double dx = playerX - train.getCurrentX();
         double dy = playerY - train.getCurrentY();
         return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+    }
+
+    public void gameTearDown(Lobby currentLobby) {
+        List<Score> currentScores = currentLobby.getScores();
+        Game game = currentLobby.getGame();
+        List<Round> rounds = game.getRounds();
+        Long gameId = game.getGameId();
+        GameResult gameResult = gameRepository.findByGameId(gameId);
+        gameResult.setRounds(rounds);
+        gameResult.setTotalScores(currentScores);
+        gameRepository.save(gameResult);
+        gameRepository.flush();
+        activeTimers.remove(gameId);
+        scoresPublished.remove(gameId);
+        activeGames.remove(game);
+        currentLobby.setGame(null);
+        System.out.println("Game " + game.getGameId() + " has ended and been removed from active games.");
+
     }
 }
