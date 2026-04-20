@@ -5,12 +5,11 @@ import ch.uzh.ifi.hase.soprafs26.objects.Admin;
 import ch.uzh.ifi.hase.soprafs26.objects.Game;
 import ch.uzh.ifi.hase.soprafs26.objects.Lobby;
 import ch.uzh.ifi.hase.soprafs26.objects.Score;
-import ch.uzh.ifi.hase.soprafs26.objects.Round;
 import ch.uzh.ifi.hase.soprafs26.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs26.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs26.rest.dto.CreateLobbyPostDTO;
 import ch.uzh.ifi.hase.soprafs26.rest.dto.LobbyAccessDTO;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,8 +18,6 @@ import ch.uzh.ifi.hase.soprafs26.constant.LobbyState;
 import java.security.SecureRandom;
 
 import ch.uzh.ifi.hase.soprafs26.entity.*;
-
-import ch.uzh.ifi.hase.soprafs26.security.AuthService;
 
 import ch.uzh.ifi.hase.soprafs26.rest.dto.MyLobbyDTO;
 
@@ -42,14 +39,15 @@ public class LobbyService {
     private final GameService gameService;
     private final SimpMessagingTemplate messagingTemplate;
     private long newLobbyId = 1L;
+    private final GameRepository gameRepository;
 
-
-    public LobbyService(/*AuthService authService,*/ UserService userService, GameService gameService, SimpMessagingTemplate messagingTemplate, UserRepository userRepository) {
+    public LobbyService(/*AuthService authService,*/ UserService userService, GameService gameService, SimpMessagingTemplate messagingTemplate, UserRepository userRepository, GameRepository gameRepository) {
         //this.authService = authService;
         this.userService = userService;
         this.gameService = gameService;
         this.messagingTemplate = messagingTemplate;
         this.userRepository = userRepository;
+        this.gameRepository = gameRepository;
     }
 
     public List<Lobby> getAllLobbies() {
@@ -71,7 +69,12 @@ public class LobbyService {
 
         Lobby newLobby = new Lobby();
 
-        newLobby.setLobbyId(newLobbyId++);
+        GameResult gameResult = new GameResult();
+
+        gameRepository.save(gameResult);
+        gameRepository.flush();
+
+        newLobby.setLobbyId(gameResult.getId());
 
         newLobby.setLobbyName(createLobbyPostDTO.getLobbyName());
 

@@ -16,6 +16,8 @@ public class Round {
     private Map<Long, Score> scores;
     private Map<Long, Double> distances;
 
+    public Round(){}
+
     public Round(int roundNumber, Train train,
                  Map<Long, GuessMessageDTO> guessMessages,
                  Map<Long, UserGameStatus> allUserGameStatuses,

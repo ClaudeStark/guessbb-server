@@ -10,6 +10,7 @@ public class GuessMessageDTO {
 
     private Long Ycoordinate;
 
+    public GuessMessageDTO() {}
 
     public Long getLobbyId() {return lobbyId;}
     public void setLobbyId(Long lobbyId) {this.lobbyId = lobbyId;}
