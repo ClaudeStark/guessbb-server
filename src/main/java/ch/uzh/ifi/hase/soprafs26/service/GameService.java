@@ -74,7 +74,7 @@ public class GameService {
             
         
         try {
-            List<Train> trains = trainPositionFetcher.fetchTrainsLive(currentLobby.getMaxRounds());
+            List<Train> trains = trainPositionFetcher.fetchTrainsMock(currentLobby.getMaxRounds());
 
             for (Train train : trains) {
                 trainPositionFetcher.interpolatePosition(train);
