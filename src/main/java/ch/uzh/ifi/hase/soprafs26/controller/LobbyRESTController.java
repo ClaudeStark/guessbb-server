@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs26.controller;
 
+import ch.uzh.ifi.hase.soprafs26.entity.GameResult;
+import ch.uzh.ifi.hase.soprafs26.repository.GameRepository;
 import ch.uzh.ifi.hase.soprafs26.rest.dto.*;
 
 import ch.uzh.ifi.hase.soprafs26.constant.*;
@@ -25,20 +27,22 @@ public class LobbyRESTController {
 
     public final LobbyService lobbyService;
     public final AuthService authService;
+    private final GameRepository gameRepository;
 
-    public LobbyRESTController(LobbyService lobbyService, AuthService authService) {
+    public LobbyRESTController(LobbyService lobbyService, AuthService authService, GameRepository gameRepository) {
         this.lobbyService = lobbyService;
         this.authService = authService;
+        this.gameRepository = gameRepository;
     }
 
     @PostMapping("/lobbies")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public LobbyAccessDTO createLobby(@RequestHeader ("token") String token, @RequestBody CreateLobbyPostDTO createLobbyPostDTO){
+    public LobbyAccessDTO createLobby(@RequestHeader ("token") String token, @RequestHeader("userId") Long userId, @RequestBody CreateLobbyPostDTO createLobbyPostDTO){
         boolean isGuest;
         LobbyAccessDTO lobbyAccessDTO = null;
 
-        AuthHeader authHeader = new AuthHeader(createLobbyPostDTO.getUserId(), token);
+        AuthHeader authHeader = new AuthHeader(userId, token);
         try{
             boolean isAuthenticated = authService.authUser(authHeader);
 
@@ -46,12 +50,12 @@ public class LobbyRESTController {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
             }
             isGuest = false;
-            lobbyAccessDTO = lobbyService.createLobby(createLobbyPostDTO, isGuest);
+            lobbyAccessDTO = lobbyService.createLobby(createLobbyPostDTO, isGuest, userId, token);
 
         } catch (ResponseStatusException e){
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                 isGuest = true;
-                lobbyAccessDTO = lobbyService.createLobby(createLobbyPostDTO, isGuest);
+                lobbyAccessDTO = lobbyService.createLobby(createLobbyPostDTO, isGuest, null, null);
 
             } else {
                 throw e;
@@ -85,20 +89,82 @@ public class LobbyRESTController {
     @PostMapping("/lobbies/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public LobbyAccessDTO joinLobby(@PathVariable("id") Long lobbyId, @RequestHeader("Token") String token,
-            @RequestHeader("UserId") Long userId,
+    public LobbyAccessDTO joinLobby(
+            @PathVariable("id") Long lobbyId,
+            @RequestHeader("token") String token,
+            @RequestHeader("userId") Long userId,
             @RequestBody LobbyCodePostDTO lobbyCodePostDTO) {
-        // in this version: lobbyCodePostDTO contains userID, modify based on
-        // implementation of authService
-        Lobby lobbyCodePostDTOentity = DTOMapper.INSTANCE.convertLobbyCodePostDTOtoEntity(lobbyCodePostDTO);
-        // Check if the user is authenticated
-        try {
-            authService.authUser(new AuthHeader(userId, token));
-            Lobby lobby = lobbyService.joinLobby(userId, lobbyId, lobbyCodePostDTOentity.getLobbyCode());
-            // Return the lobby access information
-            return DTOMapper.INSTANCE.convertEntityToLobbyAccessDTO(lobby);
-        } catch (Exception e) {
-            throw e;
+
+        boolean isGuest;
+        LobbyAccessDTO lobbyAccessDTO = null;
+
+        AuthHeader authHeader = new AuthHeader(userId, token);
+        try{
+            boolean isAuthenticated = authService.authUser(authHeader);
+
+            if(!isAuthenticated){
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+            }
+            isGuest = false;
+            lobbyAccessDTO = lobbyService.joinLobby(userId, token, lobbyId, lobbyCodePostDTO.getLobbyCode(), isGuest);
+        } catch (ResponseStatusException e){
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                isGuest = true;
+                lobbyAccessDTO = lobbyService.joinLobby(null,null, lobbyId, lobbyCodePostDTO.getLobbyCode(), isGuest);
+
+            } else {
+                throw e;
+            }
+
         }
+        // 3. Mapping (Wichtig: lobbyAccessDTO darf nicht null sein!)
+        //lobbyAccessDTO = DTOMapper.INSTANCE.convertLobbyToLobbyAccessDTO(lobby);
+
+        return lobbyAccessDTO;    }
+
+    @GetMapping("/lobbies/debug")
+    @ResponseStatus(HttpStatus.OK)
+        @ResponseBody
+    public List<Lobby> getLobbiesDebug() {
+        List<Lobby> lobbies = lobbyService.getAllLobbies();
+
+        return lobbies;
+    }
+
+
+    @GetMapping("/lobbies/{lobbyId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public MyLobbyDTO getMyLobby(
+            @PathVariable("lobbyId") Long lobbyId,
+            @RequestHeader("token") String token,
+            @RequestHeader("userId") Long userId) {
+
+        AuthHeader authHeader = new AuthHeader(userId, token);
+        boolean isAuthenticated = authService.authUser(authHeader);
+        if (!isAuthenticated) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Please log in");
+        }
+        Lobby lobby = lobbyService.getLobby(lobbyId, userId);
+        return DTOMapper.INSTANCE.convertEntityToMyLobbyDTO(lobby);
+    }
+
+    @GetMapping("/game/{gameId}/leaderboard")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public GameResultDTO leaderboard(
+            @PathVariable("gameId") Long gameId,
+            @RequestHeader("token") String token,
+            @RequestHeader("userId") Long userId) {
+
+        AuthHeader authHeader = new AuthHeader(userId, token);
+        boolean isAuthenticated = authService.authUser(authHeader);
+        if (!isAuthenticated) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Please log in");
+        }
+
+        GameResult gameResult = gameRepository.findByGameId(gameId);
+
+        return DTOMapper.INSTANCE.convertGameResultToGameResultDTO(gameResult);
     }
 }

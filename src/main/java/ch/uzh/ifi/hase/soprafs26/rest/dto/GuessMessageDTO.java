@@ -10,6 +10,7 @@ public class GuessMessageDTO {
 
     private Long Ycoordinate;
 
+    public GuessMessageDTO() {}
 
     public Long getLobbyId() {return lobbyId;}
     public void setLobbyId(Long lobbyId) {this.lobbyId = lobbyId;}
@@ -22,6 +23,7 @@ public class GuessMessageDTO {
 
     public Long getYcoordinate() {return Ycoordinate;}
     public void setYcoordinate(Long Ycoordinate) {this.Ycoordinate = Ycoordinate;}
+
 
     public GuessMessageDTO(long lobbyId, long userId) {
         this.lobbyId = lobbyId;

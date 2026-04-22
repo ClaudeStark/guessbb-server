@@ -4,33 +4,43 @@ import ch.uzh.ifi.hase.soprafs26.constant.UserStatus;
 
 public class UserGetDTO {
 
-	private Long userId;
-	private String username;
-	private UserStatus status;
+    private Long userId;
 
-	public Long getUserId() {
-		return userId;
-	}
+    private String username;
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
+    private String token;
 
+    private UserStatus status;
 
+    public Long getUserId() {
+        return userId;
+    }
 
-	public String getUsername() {
-		return username;
-	}
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public String getUsername() {
+        return username;
+    }
 
-	public UserStatus getStatus() {
-		return status;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	public void setStatus(UserStatus status) {
-		this.status = status;
-	}
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
+    }
 }

@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs26.controller;
 
+import ch.uzh.ifi.hase.soprafs26.constant.MessageType;
 import ch.uzh.ifi.hase.soprafs26.security.AuthHeader;
 import ch.uzh.ifi.hase.soprafs26.service.LobbyService;
 import ch.uzh.ifi.hase.soprafs26.security.AuthService;
@@ -33,27 +34,27 @@ public class LobbyWebSocketController {
 
     @MessageMapping("/lobby/{lobbyId}/start")
     public void startGameAdmin(@DestinationVariable String lobbyId, Message message) {
-        
+        System.out.println("CHeck ob im controller");
         Lobby lobby = lobbyService.getLobbyById(Long.parseLong(lobbyId));
 
             
         // Authenticate the user
         // Convert payload to AuthHeader
         AuthHeader authHeader = objectMapper.convertValue(
-            message.getPayload(), 
+            message.getPayload(),
             AuthHeader.class
         );
 
         if (!authService.authUser(authHeader)) {
-            return;
+            throw new  ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-
 
         //Check whether user is admin of the lobby
         Long userId = authHeader.getUserId();
         if (!lobby.getAdmin().getUserId().equals(userId)) {
-            return;
-    }
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the admin can start the game");
+  }
+        System.out.println("Check nach admin check");
         // Start the game
         lobbyService.startGame(Long.parseLong(lobbyId));
         
@@ -62,28 +63,28 @@ public class LobbyWebSocketController {
 //Leave Lobby
 @MessageMapping("/lobby/{lobbyId}/leave")
     public void leaveLobby(@DestinationVariable String lobbyId, Message message) {
-        
+        System.out.println("In LobbyWebSocketController");
         Lobby lobby = lobbyService.getLobbyById(Long.parseLong(lobbyId));
 
             
         // Authenticate the user
         // Convert payload to AuthHeader
-        AuthHeader authHeader = objectMapper.convertValue(
-            message.getPayload(), 
-            AuthHeader.class
-        );
-        try{
-            boolean isAuthenticated = authService.authUser(authHeader);
+        MessageType type = message.getType();
+        if (type == MessageType.LEAVE_LOBBY) {
+            AuthHeader authHeader = objectMapper.convertValue(message.getPayload(), AuthHeader.class);
 
-            if(!isAuthenticated){
-                return;
-            }
-        
+            try {
+                boolean isAuthenticated = authService.authUser(authHeader);
+                System.out.println("isAuthenticated: " + isAuthenticated);
+                if (!isAuthenticated) {
+                    return;
+                }
+
                 // remove user from Lobby
                 lobbyService.leaveLobby(Long.parseLong(lobbyId), authHeader.getUserId());
+            }
+            catch (ResponseStatusException e) {
+            }
         }
-        catch (ResponseStatusException e){
-        }
-                
 }
 }

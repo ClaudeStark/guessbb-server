@@ -23,13 +23,33 @@ public interface DTOMapper {
 
 	DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
-	User convertRegisterPostDTOtoUser(RegisterPostDTO registerPostDTO);
+    @Mapping(target = "userId", ignore = true)
+    @Mapping(target = "userScoreboard", ignore = true)
+    @Mapping(target = "creationDate", ignore = true)
+    @Mapping(target = "token", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "friends", ignore = true)
+    User convertRegisterPostDTOtoUser(RegisterPostDTO registerPostDTO);
 
 	UserAuthDTO convertUsertoUserAuthDTO(User user);
 
-	@Mapping(source = "username", target = "username")
-	User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
+    @Mapping(source = "lobbyId", target = "lobbyId")
+    @Mapping(source = "lobbyCode", target = "lobbyCode")
+    @Mapping(target = "userId", ignore = true) // Neu hinzufügen
+    @Mapping(target = "token", ignore = true)  // Neu hinzufügen
+    LobbyAccessDTO convertLobbyToLobbyAccessDTO(Lobby lobby);
 
+	@Mapping(source = "userId", target = "userId")
+	@Mapping(source = "username", target = "username")
+	@Mapping(source = "token", target = "token")
+	@Mapping(source = "status", target = "status")
+	UserGetDTO convertUserToUserGetDTO(User user);
+
+    @Mapping(source = "gameId", target = "gameId")
+    @Mapping(source = "rounds", target = "rounds")
+    @Mapping(source = "scores", target = "scores")
+    @Mapping(source = "usernames", target = "usernames")
+    GameResultDTO convertGameResultToGameResultDTO(GameResult gameResult);
 
     @Mapping(source = "userScoreboard", target = "userScoreboard")
 	@Mapping(source = "username", target = "username")
@@ -46,10 +66,7 @@ public interface DTOMapper {
 	@Mapping(source = "friends", target = "friends")
 	UserDTO convertUserToUserDTO(User user);
 
-	@Mapping(source = "userId", target = "userId")
-	@Mapping(source = "username", target = "username")
-	@Mapping(source = "status", target = "status")
-	UserGetDTO convertEntityToUserGetDTO(User user);
+
 
 	@Mapping(source = "lobbyName", target = "lobbyName")
 	@Mapping(source = "size", target = "size")
@@ -67,20 +84,30 @@ public interface DTOMapper {
 	@Mapping(source = "admin", target = "admin")
 	@Mapping(source = "size", target = "size")
 	@Mapping(source = "visibility", target = "visibility")
-	@Mapping(source = "users", target = "users")
 	@Mapping(source = "currentRound", target = "currentRound")
+	@Mapping(source = "users", target = "users")
 	@Mapping(source = "maxRounds", target = "maxRounds")
 	@Mapping(source = "scores", target = "scores")
 	@Mapping(source = "lobbyState", target = "lobbyState")
 
 	MyLobbyDTO convertEntityToMyLobbyDTO(Lobby lobby);
 
-	@Mapping(source = "lobbyId", target = "lobbyId")
-	@Mapping(source = "lobbyCode", target = "lobbyCode")
-	LobbyAccessDTO convertEntityToLobbyAccessDTO(Lobby lobby);
+    @Mapping(source = "lobbyCode", target = "lobbyCode")
+    @Mapping(target = "lobbyId", ignore = true)
+    @Mapping(target = "lobbyName", ignore = true)
+    @Mapping(target = "admin", ignore = true)
+    @Mapping(target = "size", ignore = true)
+    @Mapping(target = "visibility", ignore = true)
+    @Mapping(target = "users", ignore = true)
+    @Mapping(target = "rounds", ignore = true)
+    @Mapping(target = "currentRound", ignore = true)
+    @Mapping(target = "maxRounds", ignore = true)
+    @Mapping(target = "scores", ignore = true)
+    @Mapping(target = "lobbyState", ignore = true)
+    @Mapping(target = "game", ignore = true)
+    Lobby convertLobbyCodePostDTOtoEntity(LobbyCodePostDTO lobbyCodePostDTO);
 
-	@Mapping(source = "lobbyCode", target = "lobbyCode")
 
-	Lobby convertLobbyCodePostDTOtoEntity(LobbyCodePostDTO lobbyCodePostDTO);
+
 
 }
