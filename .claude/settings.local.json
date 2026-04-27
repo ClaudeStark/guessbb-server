@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ':*)",
+      "Bash(cp /mnt/c/Users/doria/Downloads/downloaded-logs-20260424-214216.json /tmp/logs.json)"
+    ]
+  }
+}
