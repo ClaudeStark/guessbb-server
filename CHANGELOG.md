@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/ClaudeStark/guessbb-server/compare/v1.0.1...v1.0.2) (2026-04-27)
+
+
+### Bug Fixes
+
+* websocketsconfig ([a9a2d01](https://github.com/ClaudeStark/guessbb-server/commit/a9a2d0148f3f53ddfcc8ffcdd208d0b0f196ad74))
+
 ## [1.0.1](https://github.com/ClaudeStark/guessbb-server/compare/v1.0.0...v1.0.1) (2026-04-27)
 
 
