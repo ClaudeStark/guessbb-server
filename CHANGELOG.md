@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/ClaudeStark/guessbb-server/compare/v1.0.0...v1.0.1) (2026-04-27)
+
+
+### Bug Fixes
+
+* add new vercel url to websocketconfig ([ae3f70e](https://github.com/ClaudeStark/guessbb-server/commit/ae3f70ea6295ee18bac162a6a3362f90eb6db0ff))
+
 # 1.0.0 (2026-04-27)
 
 
