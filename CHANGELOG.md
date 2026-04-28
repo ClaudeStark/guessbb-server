@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/ClaudeStark/guessbb-server/compare/v1.0.2...v1.0.3) (2026-04-28)
+
+
+### Bug Fixes
+
+* test ([074ef05](https://github.com/ClaudeStark/guessbb-server/commit/074ef050af4441e8c938d5f65955f82048c959e8))
+
 ## [1.0.2](https://github.com/ClaudeStark/guessbb-server/compare/v1.0.1...v1.0.2) (2026-04-27)
 
 
