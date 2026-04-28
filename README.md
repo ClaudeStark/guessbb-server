@@ -42,7 +42,7 @@ More Information about [Gradle Wrapper](https://docs.gradle.org/current/userguid
 ### Run
 
 ```bash
-./gradlew bootRun
+./gradlew bootRun 
 ```
 
 You can verify that the server is running by visiting `localhost:8080` in your browser.
